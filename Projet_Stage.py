@@ -31,7 +31,7 @@ while True:
         print("Format de date invalide. Veuillez réessayer.")
 
 # Lire et traiter les logs
-with open('C:\\Users\\w191984\\OneDrive - Worldline SA\\Documents\\logs\\logfinal.log', 'r') as f:
+with open('C:\\Users\\w191984\\OneDrive - Worldline SA\\Bureau\\Projet_Stage\\tpvcpa\\tpvcpa.log', 'r') as f:
     n = 0
     for log in f:
         n += 1
@@ -41,6 +41,7 @@ with open('C:\\Users\\w191984\\OneDrive - Worldline SA\\Documents\\logs\\logfina
         position_ERROR  = log.find("ERROR")
         error_end       = log.find(':', position_ERROR)
         warn_end        = log.find(':', position_WARN)
+        parenthèse      = log.find(")", position_INFO)
         
         if 'Length' or 'WARN' or 'ERROR' in log:
             espace = log.split(" ")
@@ -52,9 +53,11 @@ with open('C:\\Users\\w191984\\OneDrive - Worldline SA\\Documents\\logs\\logfina
             err2 = log[position_ERROR:]
             info = log[position_INFO + len("INFO"):position_length].strip() if position_INFO != -1 and position_length != -1 else ""
             warn = log[position_WARN + len("WARN"):warn_end].strip() if position_WARN != -1 else ""
+        
             
             if ':' in err2 :
                   err  = " ".join(err2.split()[1:6])
+        
               
             else :
                 err  = log[position_ERROR + len("ERROR"):error_end].strip() if position_ERROR != -1 else ""
@@ -79,7 +82,7 @@ with open('C:\\Users\\w191984\\OneDrive - Worldline SA\\Documents\\logs\\logfina
                 
                 
                 # Compter les infos par minute
-                if position_INFO > 0:
+                if position_INFO > 0 and info:
                     minute_key = log_datetime.replace(second=0, microsecond=0)
                     info_count_per_minutes[(minute_key, info)] += 1
                     total_info_count += 1  # Incrémenter le compteur global d'infos
@@ -97,7 +100,8 @@ with open('C:\\Users\\w191984\\OneDrive - Worldline SA\\Documents\\logs\\logfina
 # Affichage du nombre d'infos identiques par minute
 print("\nNombre d'infos identiques par minute:")
 for (minute, info), count in info_count_per_minutes.items():
-    print(f"{minute} - {info}: {count} fois")
+    if info:  # Vérifier si info n'est pas vide avant d'afficher
+        print(f"{minute} - {info}: {count} fois")
     
 print("\nNombre de warns identiques par minute:")
 for (minute, warn), count in warn_count_per_minutes.items():
@@ -105,8 +109,9 @@ for (minute, warn), count in warn_count_per_minutes.items():
 
 print("\nNombre d'erreurs identiques par minute:")
 for (minute,err), count in error_count_per_minutes.items():
-        print(f"{minute} - {err}: {count} fois")
+    print(f"{minute} - {err}: {count} fois")
 # Affichage des compteurs globaux
 print("\nNombre total d'infos:", total_info_count)
 print("Nombre total de warns:", total_warn_count)
 print("Nombre total d'erreurs:", total_error_count)
+
